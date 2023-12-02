@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-16-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-16-0 http://www.eiffel.com/developers/xml/configuration-1-16-0.xsd" name="aoc2023-02" uuid="3C18253B-E4F7-4BBC-A4B4-D17B6926BCD9">
-	<target name="day02">
-		<root feature="make" class="DAY02"/>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-16-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-16-0 http://www.eiffel.com/developers/xml/configuration-1-16-0.xsd" name="aoc2023-xx" uuid="3C18253B-E4F7-4BBC-A4B4-D17B6926BCD9">
+	<target name="dayXX">
+		<root feature="make" class="DAYXX"/>
 		<file_rule>
 			<exclude>/\.git$</exclude>
 			<exclude>/\.svn$</exclude>
