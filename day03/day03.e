@@ -82,9 +82,22 @@ feature {ANY} -- operations
 
 	-- Sum of all "gear ratios": the result of multipying the two part numbers
 	-- attached to a gear together
-	part_2: ANY
+	part_2: INTEGER
+		local
+			np: LIST [STRING]
 		do
-			Result := "TBD"
+			Result := 0
+			across symbols as symbol
+			loop
+				if is_possible_gear (symbol.item) then
+					np := neighboring_parts (symbol.key)
+					if np.count = 2 then
+						Result := Result + (
+							np.at (1).to_integer *
+							np.at (2).to_integer)
+					end
+				end
+			end
 		end
 
 feature {NONE} -- part 1
@@ -111,10 +124,44 @@ feature {NONE} -- part 1
 		end
 
 feature {NONE} -- part 2
-	-- a '*' symbol that is adjacent to exactly 2 part numbers
-	is_gear (symbol_start: TUPLE [INTEGER, INTEGER]): BOOLEAN
+	-- a '*' symbol
+	is_possible_gear (symbol: CHARACTER): BOOLEAN
 		do
-			Result := symbols.definite_item (symbol_start) = '*'
+			Result := symbol = '*'
+		end
+	
+	within (origin: INTEGER; point: INTEGER; threshold: INTEGER): BOOLEAN
+		local t: INTEGER
+		do
+			t := origin - point
+			Result := t.abs <= threshold
+		end
 
+	neighboring_parts (symbol_point: TUPLE [INTEGER, INTEGER]): LIST [STRING]
+		local
+			res: LINKED_LIST [STRING]
+		do
+			create res.make
+			across numbers as number
+			loop
+				-- heuristic to only dig into closer numbers
+				-- within 3 spaces in x
+				-- within 1 spaces in y
+				if
+					within (
+						symbol_point.integer_32_item (1),
+						number.key.integer_32_item (1),
+						3) and
+					within (
+						symbol_point.integer_32_item (2),
+						number.key.integer_32_item (2),
+						1) and
+					across neighbors (number.key) as n
+						some n.item.is_equal (symbol_point) end then
+					res.extend (number.item)
+				end
+			end
+
+			Result := res
 		end
 end
