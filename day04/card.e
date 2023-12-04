@@ -61,6 +61,24 @@ feature {ANY} -- access
 	winning_numbers: HASH_TABLE [INTEGER, STRING]
 
 feature {ANY} -- output
+	points: REAL_64
+		local count: INTEGER
+		do
+			count := matches
+			if count = 0 then
+				Result := 0
+			else
+				-- then cheekily do 2^(Result - 1)
+				Result := 2 ^ (count - 1)
+			end
+		end
+	matches: INTEGER
+		do
+			across winning_numbers as ic
+			loop
+				Result := Result + ic.item
+			end
+		end
 	out: STRING
 		do
 			Result := "CARD " + id.out + "%N"

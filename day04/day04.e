@@ -44,7 +44,7 @@ feature {ANY} -- operations
 			Result := 0
 			across cards as ic
 			loop
-				Result := Result + points (ic.item)
+				Result := Result + ic.item.points
 			end
 		end
 	part_2: INTEGER
@@ -53,7 +53,7 @@ feature {ANY} -- operations
 		do
 			across cards as ic
 			loop
-				match_count := matches (ic.item)
+				match_count := ic.item.matches
 				card_count := card_counts.definite_item (ic.item.id)
 
 				from
@@ -76,24 +76,5 @@ feature {ANY} -- operations
 		end
 
 feature {NONE} -- part 1
-	points (card: CARD): REAL_64
-		local count: INTEGER
-		do
-			count := matches (card)
-			if count = 0 then
-				Result := 0
-			else
-				-- then cheekily do 2^(Result - 1)
-				Result := 2 ^ (count - 1)
-			end
-		end
 feature {NONE} -- part 2
-	matches (card: CARD): INTEGER
-		do
-			Result := 0
-			across card.winning_numbers as in
-			loop
-				Result := Result + in.item
-			end
-		end
 end
