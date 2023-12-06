@@ -49,7 +49,7 @@ feature {ANY} -- operations
 		end
 	part_2: INTEGER
 		local
-			match_count, i, card_count, tmp: INTEGER
+			match_count, i, card_count: INTEGER
 		do
 			across cards as ic
 			loop
@@ -62,8 +62,7 @@ feature {ANY} -- operations
 					i > match_count 
 					or not card_counts.has_key (ic.item.id + i)
 				loop
-					tmp := card_counts.definite_item (ic.item.id + i)
-					card_counts.replace (tmp + card_count, ic.item.id + i)
+					card_counts.replace (card_counts.definite_item (ic.item.id + i) + card_count, ic.item.id + i)
 					i := i + 1
 				end
 
