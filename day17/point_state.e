@@ -1,6 +1,8 @@
 class
 	POINT_STATE
 inherit
+	COMPARABLE
+		redefine is_equal, out end
 	HASHABLE
 		redefine is_equal, out end
 	POINT
@@ -9,7 +11,7 @@ inherit
 create
 	make
 feature
-	make (p: POINT; f, n: INTEGER)
+	make (p: POINT; f, n: INTEGER; costs: HASH_TABLE [INTEGER, POINT_STATE])
 		-- x: x location
 		-- y: y location
 		-- f: facing
@@ -19,6 +21,7 @@ feature
 			y := p.y
 			facing := f
 			forward_count := n
+			path_costs := costs
 
 			create always_valid_moves.make
 			always_valid_moves.extend ({DAY17}.Turn_left)
@@ -32,6 +35,7 @@ feature
 
 	always_valid_moves: LINKED_LIST [INTEGER]
 	sometimes_valid_moves: LINKED_LIST [INTEGER]
+	path_costs: HASH_TABLE [INTEGER, POINT_STATE]
 
 feature -- Access
 	facing: INTEGER
@@ -54,28 +58,31 @@ feature -- Access
 				if mc.item = {DAY17}.Forward then
 					create new_point.make (0, -1)
 					new_point := rotate_unit (new_point, facing)
-					create new_state.make (
+					new_state := new_point_state (
 						Current + new_point,
 						facing,
-						forward_count + 1
+						forward_count + 1,
+						path_costs
 					)
 					--print ("FORWARD: " + new_state.out + "%N")
 				elseif mc.item = {DAY17}.Turn_right then
 					create new_point.make (0, -1)
 					new_point := rotate_unit (new_point, (facing + 3) \\ 4)
-					create new_state.make (
+					new_state := new_point_state (
 						Current + new_point,
 						(facing + 3) \\ 4,
-						1
+						1,
+						path_costs
 					)
 					--print ("RIGHT: " + new_state.out + "%N")
 				else --elseif mc.item = {DAY17}.Turn_left then
 					create new_point.make (0, -1)
 					new_point := rotate_unit (new_point, (facing + 1) \\ 4)
-					create new_state.make (
+					new_state := new_point_state (
 						Current + new_point,
 						(facing + 1) \\ 4,
-						1
+						1,
+						path_costs
 					)
 					--print ("LEFT: " + new_state.out + "%N")
 				end
@@ -101,7 +108,13 @@ feature {NONE} -- helpers
 				Result := p
 			end
 		end
+	
+	new_point_state (p: POINT; f, n: INTEGER; costs: HASH_TABLE [INTEGER, POINT_STATE]): POINT_STATE
+		do
+			create Result.make (p, f, n, costs)
+		end
 
+feature {POINT_STATE} -- other helpers
 	valid_moves: LIST [INTEGER]
 		do
 			if forward_count < 3 then
@@ -110,13 +123,11 @@ feature {NONE} -- helpers
 				Result := always_valid_moves
 			end
 		end
-feature -- hashing
-	hash_code: INTEGER
+feature -- comparison
+	is_less alias "<" (other: POINT_STATE): BOOLEAN
 		do
-			Result := x
-			Result := Result * 37 + y
-			Result := Result * 37 + facing
-			Result := Result * 37 + forward_count
+			Result := {DAY17}.cost_from_map (Current, path_costs)
+				< {DAY17}.cost_from_map (other, path_costs)
 		end
 
 	is_equal (other: POINT_STATE): BOOLEAN
@@ -125,6 +136,16 @@ feature -- hashing
 				and y = other.y
 				and facing = other.facing
 				and forward_count = other.forward_count
+		end
+
+
+feature -- hashing
+	hash_code: INTEGER
+		do
+			Result := x
+			Result := Result * 37 + y
+			Result := Result * 37 + facing
+			Result := Result * 37 + forward_count
 		end
 feature -- out
 	out: STRING
